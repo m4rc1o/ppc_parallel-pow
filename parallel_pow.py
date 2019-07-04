@@ -36,13 +36,18 @@ if meu_id == 0:
 
 encontrado = False
 id_quem_achou = -1
+contador = 1
 
 while nounce < nounce_fin and not encontrado:
     bloco['nounce'] = nounce
     bloco_hash = hashlib.sha256((str(bloco)).encode()).hexdigest()
     nounce += 1
     
-    encontrado = comm.iprobe(source=MPI.ANY_SOURCE, tag=0)
+    #Fazendo o iprobe apenas a cada 1000 iterações, pois ele é demorado
+    if contador%1000 == 0:
+        encontrado = comm.iprobe(source=MPI.ANY_SOURCE, tag=0)
+    
+    contador += 1
     
     if bloco_hash[0:qtd_zeros] == '0'*qtd_zeros:
         encontrado = True
@@ -56,7 +61,8 @@ if encontrado and meu_id == id_quem_achou:
     tempo_fim = MPI.Wtime()
     print("Tempo de execução:", tempo_fim - tempo_ini)
     
+    #Informando aos outros processos que o hash foi encontrado
     for i in range(qtd_processos):
         comm.isend(encontrado, dest=i, tag=0)
-
+    
     
