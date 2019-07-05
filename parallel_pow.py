@@ -24,21 +24,21 @@ bloco['id'] = sys.argv[1] #Para produzir hashs aleatórios de blocos com ids pas
 qtd_zeros = int(sys.argv[2])
 qtd_testar_total = int(sys.argv[3])
 
-qtd_testar_local = qtd_testar_total // qtd_processos
-nounce_ini = meu_id*qtd_testar_local
-nounce_fin = (meu_id + 1)*qtd_testar_local
+qtd_testar_local = qtd_testar_total // qtd_processos # A faixa de nounces que será testada por cada processo
+nounce_ini = meu_id*qtd_testar_local # O nounce inicial da faixa
+nounce_fin = (meu_id + 1)*qtd_testar_local # O nounce final da faixa
 
 print("Sou o processo", meu_id, "e vou testar de", nounce_ini, "até", nounce_fin)
 
-nounce = nounce_ini
 bloco_hash = hashlib.sha256((str(bloco)).encode()).hexdigest()
 if meu_id == 0:
     print("Hash inicial", bloco_hash)
 
+#Executando os testes nas respectivas faixas
+nounce = nounce_ini
 encontrado = False
 id_quem_achou = -1
 contador = 0
-
 while nounce < nounce_fin and not encontrado:
     bloco['nounce'] = nounce
     bloco_hash = hashlib.sha256((str(bloco)).encode()).hexdigest()
